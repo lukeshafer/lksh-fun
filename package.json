@@ -1,0 +1,30 @@
+{
+	"name": "lksh-fun",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "sst dev",
+		"build": "sst build",
+		"deploy": "sst deploy",
+		"remove": "sst remove",
+		"console": "sst console",
+		"typecheck": "tsc --noEmit",
+		"astro:add": "pnpm --filter admin-site run astro add",
+		"astro:dev": "pnpm --filter admin-site run dev",
+		"astro:dev:host": "pnpm --filter admin-site run dev:host",
+		"astro:build": "pnpm --filter admin-site run build",
+		"astro": "pnpm --filter admin-site run astro"
+	},
+	"devDependencies": {
+		"@tsconfig/node16": "^1.0.4",
+		"aws-cdk-lib": "2.79.1",
+		"constructs": "10.1.156",
+		"prettier": "^2.8.8",
+		"sst": "2.11.1",
+		"typescript": "^5.0.4"
+	},
+	"workspaces": [
+		"packages/*"
+	]
+}
