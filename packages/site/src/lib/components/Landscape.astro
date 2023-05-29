@@ -3,56 +3,22 @@ import InteractiveSun from '@c/InteractiveSun.astro';
 import Hills from './Hills.astro';
 ---
 
-<div class="container">
+<header class="container">
+	<div class="hills-container" aria-hidden="true">
+		<Hills />
+	</div>
 	<div class="sun-container">
-		<h1 class="title">Hi, I'm Luke</h1>
+		<h1 class="title">Hi, I'm Luke!</h1>
 		<InteractiveSun>
 			<div class="sun"></div>
 		</InteractiveSun>
 	</div>
-	<Hills />
 	<a class="next-section-link" href="#">psst, there's more down here ↓</a>
-</div>
+</header>
 
 <style>
-	:root {
-		--sun-color-light: var(--yellow-8);
-		--sun-stroke-light: var(--yellow-6);
-		--sky-color-light: var(--brown-0);
-		--shadow-color-light: rgba(0, 0, 0, 0.3);
-		--title-color-light: var(--pink-11);
-
-		--sun-color-dark: var(--sand-0);
-		--sun-stroke-dark: var(--sand-2);
-		--sky-color-dark: var(--sand-11);
-		--shadow-color-dark: rgba(255, 255, 255, 0.3);
-		--title-color-dark: var(--violet-2);
-
-		--sun-color: var(--sun-color-light);
-		--sun-stroke: var(--sun-stroke-light);
-		--hills-stroke: var(--hills-stroke-light);
-		--sky-color: var(--sky-color-light);
-		--sky-color-inverse: var(--sky-color-dark);
-		--shadow-color: var(--shadow-color-light);
-		--shadow-color-inverse: var(--shadow-color-dark);
-		--title-color: var(--title-color-light);
-
-		--landscape-shadow: 2px 2px 5px var(--shadow-color);
-		--landscape-shadow-inverse: 2px 2px 5px var(--shadow-color-inverse);
-
-		& body.dark {
-			--sun-color: var(--sun-color-dark);
-			--sun-stroke: var(--sun-stroke-dark);
-			--sky-color: var(--sky-color-dark);
-			--sky-color-inverse: var(--sky-color-light);
-			--shadow-color: var(--shadow-color-dark);
-			--shadow-color-inverse: var(--shadow-color-light);
-			--title-color: var(--title-color-dark);
-		}
-	}
-
 	.container {
-		position: absolute;
+		position: relative;
 		inset: 0;
 		overflow: hidden;
 		width: 100%;
@@ -68,40 +34,6 @@ import Hills from './Hills.astro';
 		animation: var(--animation-fade-in) forwards;
 		animation-duration: 1s;
 		animation-delay: 0;
-
-		& .sun-container {
-			opacity: 0;
-			animation: rise 2s var(--ease-in-out-3) forwards, var(--hide-before-animation),
-				temp-overflow-hidden 4s forwards;
-			animation-delay: 0s, 0s, 1.5s;
-		}
-
-		& .title {
-			opacity: 0;
-			animation: var(--animation-slide-in-left) forwards,
-				var(--animation-fade-in-bloom) forwards;
-			animation-duration: 1s;
-			animation-timing-function: var(--ease-out-3);
-			animation-delay: 2s;
-		}
-	}
-
-	@keyframes temp-overflow-hidden {
-		0% {
-			overflow: hidden;
-		}
-		100% {
-			overflow: visible;
-		}
-	}
-
-	@keyframes rise {
-		0% {
-			translate: -50vw 100vh;
-		}
-		100% {
-			translate: 0 0;
-		}
 	}
 
 	.sun-container {
@@ -111,27 +43,35 @@ import Hills from './Hills.astro';
 		min-width: 100px;
 		min-height: 100px;
 		border-radius: 9999px;
-		animation: var(--sun-animation);
 		gap: 3rem;
 		overflow: hidden;
 
 		display: flex;
 		align-items: center;
 
-		& .sun {
-		}
+		opacity: 0;
+		animation: rise 2s var(--ease-in-out-3) forwards, var(--hide-before-animation),
+			hide-overflow 4s forwards;
+		animation-delay: 0s, 0s, 1.5s;
+	}
 
-		& .title {
-			z-index: -1 !important;
-			right: 120%;
-			width: max-content;
-			white-space: nowrap;
+	.sun-container .title {
+		text-transform: lowercase;
+		z-index: -1;
+		right: 120%;
+		width: max-content;
+		white-space: nowrap;
 
-			color: var(--title-color);
+		color: var(--title-color);
 
-			font-family: 'Montserrat', cursive;
-			font-weight: 700;
-		}
+		font-family: 'Montserrat', cursive;
+		font-weight: 700;
+
+		opacity: 0;
+		animation: var(--animation-slide-in-left) forwards, var(--animation-fade-in-bloom) forwards;
+		animation-duration: 1s;
+		animation-timing-function: var(--ease-out-3);
+		animation-delay: 2s;
 	}
 
 	.next-section-link {
@@ -151,5 +91,23 @@ import Hills from './Hills.astro';
 		animation: var(--animation-fade-in) forwards;
 		animation-duration: 1s;
 		animation-delay: 4s;
+	}
+
+	@keyframes hide-overflow {
+		0% {
+			overflow: hidden;
+		}
+		100% {
+			overflow: visible;
+		}
+	}
+
+	@keyframes rise {
+		0% {
+			translate: -30vw 100vh;
+		}
+		100% {
+			translate: 0 0;
+		}
 	}
 </style>

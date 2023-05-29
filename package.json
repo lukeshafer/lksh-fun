@@ -10,11 +10,11 @@
 		"remove": "sst remove",
 		"console": "sst console",
 		"typecheck": "tsc --noEmit",
-		"astro:add": "pnpm --filter admin-site run astro add",
-		"astro:dev": "pnpm --filter admin-site run dev",
-		"astro:dev:host": "pnpm --filter admin-site run dev:host",
-		"astro:build": "pnpm --filter admin-site run build",
-		"astro": "pnpm --filter admin-site run astro"
+		"astro:add": "pnpm --filter site run astro add",
+		"astro:dev": "pnpm --filter site run dev",
+		"astro:dev:host": "pnpm --filter site run dev:host",
+		"astro:build": "pnpm --filter site run build",
+		"astro": "pnpm --filter site run astro"
 	},
 	"devDependencies": {
 		"@tsconfig/node16": "^1.0.4",

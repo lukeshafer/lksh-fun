@@ -1,8 +1,19 @@
 ---
-import BaseLayout from "../lib/layout/BaseLayout.astro";
-import Landscape from "@c/Landscape.astro";
+import BaseLayout from '../lib/layout/BaseLayout.astro';
+import Landscape from '@c/Landscape.astro';
 ---
 
 <BaseLayout>
 	<Landscape />
+	<main>
+		<section class="section-1"></section>
+	</main>
 </BaseLayout>
+
+<style>
+	.section-1 {
+		height: 100vh;
+		background: var(--hills-color-4);
+		background-size: cover;
+	}
+</style>
