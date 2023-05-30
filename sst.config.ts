@@ -1,6 +1,7 @@
 import { SSTConfig } from 'sst';
 import { API } from './stacks/Api';
 import { Site } from './stacks/Site';
+import { WebSocketApi } from './stacks/WebSocketApi';
 
 export default {
 	config(_input) {
@@ -10,6 +11,6 @@ export default {
 		};
 	},
 	stacks(app) {
-		app.stack(API).stack(Site);
+		app.stack(API).stack(WebSocketApi).stack(Site);
 	},
 } satisfies SSTConfig;

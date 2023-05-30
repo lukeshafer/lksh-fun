@@ -1,0 +1,9 @@
+---
+import { WebSocketApi } from 'sst/node/websocket-api';
+import BaseLayout from '../lib/layout/BaseLayout.astro';
+import FridgeMagnets from '@lksh-fun/fridge-magnets/index.svelte';
+---
+
+<BaseLayout>
+	<FridgeMagnets client:load apiUrl={WebSocketApi.FridgeMagnetsApi.url} />
+</BaseLayout>

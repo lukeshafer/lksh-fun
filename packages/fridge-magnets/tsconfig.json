@@ -6,17 +6,8 @@
 			"@/*": [
 				"src/*"
 			],
-			"@c/*": [
-				"src/lib/components/*"
-			],
-			"@layout/*": [
-				"src/lib/layout/*"
-			],
 			"@lksh-fun/core/*": [
 				"../core/src/*"
-			],
-			"@lksh-fun/fridge-magnets/*": [
-				"../fridge-magnets/src/*"
 			]
 		},
 		"jsx": "preserve",
