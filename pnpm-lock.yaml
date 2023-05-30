@@ -28,6 +28,10 @@ importers:
         version: 5.0.4
 
   packages/core:
+    dependencies:
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
     devDependencies:
       '@types/node':
         specifier: ^20.2.5
@@ -40,7 +44,14 @@ importers:
         version: 0.31.1
 
   packages/fridge-magnets:
+    dependencies:
+      solid-js:
+        specifier: ^1.7.5
+        version: 1.7.5
     devDependencies:
+      '@acab/ecsstatic':
+        specifier: ^0.7.1
+        version: 0.7.1
       astro:
         specifier: ^2.5.5
         version: 2.5.5

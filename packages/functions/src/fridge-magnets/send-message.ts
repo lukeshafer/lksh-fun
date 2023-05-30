@@ -20,7 +20,15 @@ export const handler = WebSocketApiHandler(async (evt) => {
 	const postToConnection = async function({ id }: { id: string }) {
 		try {
 			// Send the message to the given client
-			await apiG.postToConnection({ ConnectionId: id, Data: messageData }).promise();
+			await apiG
+				.postToConnection({
+					ConnectionId: id,
+					Data: JSON.stringify({
+						action: 'message',
+						data: messageData,
+					}),
+				})
+				.promise();
 			console.log('Message sent to:', id);
 		} catch (e) {
 			console.log('Error sending message:', e);
