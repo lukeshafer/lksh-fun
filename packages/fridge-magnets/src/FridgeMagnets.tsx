@@ -1,38 +1,43 @@
 import './main.css';
 import { GameClient } from './game-client';
 import { createSignal, onMount } from 'solid-js';
+import { state, setState } from './state';
+import MainMenu from './windows/MainMenu';
 //import { css } from '@acab/ecsstatic';
 
-export default function(props: { apiUrl: string }) {
-	const [name, setName] = createSignal('');
-	const [connected, setConnected] = createSignal(false);
-	let client: GameClient;
+export default function (props: { apiUrl: string }) {
+	const [client, setClient] = createSignal<GameClient>();
 
 	onMount(() => {
-		client = new GameClient(props.apiUrl);
-		client.connect().then(() => setConnected(true));
+		setClient(
+			new GameClient(props.apiUrl, {
+				onclose: () => {
+					setState('isConnected', false);
+				},
+			})
+		);
+		client()!
+			.connect()
+			.then(() => setState('isConnected', true));
 
 		window.addEventListener('beforeunload', () => {
-			client.disconnect();
+			client()?.disconnect();
 		});
 	});
 
 	return (
-		<article>
-			<input
-				type="text"
-				id="name"
-				value={name()}
-				onInput={(e) => setName(e.target.value)}
-				placeholder="Your Name"
-				required
-			/>
-			<button
-				class="btn"
-				onClick={() => client.ping(name())}
-				classList={{ visible: !connected() }}>
-				<span>Connect</span>
-			</button>
-		</article>
+		<p>
+			{client() ? (
+				!state.room ? (
+					<MainMenu client={client()!} />
+				) : state.room.gamePhase === 'lobby' ? (
+					<p>Lobby (not implemented)</p>
+				) : state.room.gamePhase === 'playing' ? (
+					<p>Playing (not implemented)</p>
+				) : state.room.gamePhase === 'showcase' ? (
+					<p>Showcase (not implemented)</p>
+				) : null
+			) : null}
+		</p>
 	);
 }

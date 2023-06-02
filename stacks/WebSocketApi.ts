@@ -18,7 +18,8 @@ export function WebSocketApi({ stack }: StackContext) {
 			$connect: 'packages/functions/src/fridge-magnets/connect.handler',
 			$disconnect: 'packages/functions/src/fridge-magnets/disconnect.handler',
 			sendmessage: 'packages/functions/src/fridge-magnets/send-message.handler',
-			test: 'packages/functions/src/fridge-magnets/test.handler',
+			joinroom: 'packages/functions/src/fridge-magnets/join-room.handler',
+			createroom: 'packages/functions/src/fridge-magnets/create-room.handler',
 		},
 	});
 	stack.addOutputs({

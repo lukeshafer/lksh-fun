@@ -7,6 +7,7 @@ type pieceObj = {
 };
 
 export const [state, setState] = createStore<{
+	isConnected: boolean;
 	room?: Room;
 	player?: Player;
 	playedPieces: Record<number, pieceObj>;
@@ -14,6 +15,7 @@ export const [state, setState] = createStore<{
 	isPlayerDone: boolean;
 	gamePhase: 'lobby' | 'playing' | 'waiting';
 }>({
+	isConnected: false,
 	playedPieces: {},
 	movedCoords: {},
 	isPlayerDone: false,

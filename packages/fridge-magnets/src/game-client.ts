@@ -21,11 +21,17 @@ interface ActionData {
  */
 export class GameClient {
 	url: string;
-	private ws: WebSocket;
-	private onopen: ((ws: WebSocket) => void) | undefined;
-	constructor(url: string, onopen?: (ws: WebSocket) => void) {
+	private ws: WebSocket | undefined;
+	constructor(
+		url: string,
+		options: {
+			onopen?: (ws: WebSocket) => void;
+			onclose?: () => void;
+		} = {}
+	) {
 		this.url = url;
-		this.onopen = onopen;
+		if (options.onopen) this.onopen = options.onopen;
+		if (options.onclose) this.onclose = options.onclose;
 		this.ws = new WebSocket(this.url);
 	}
 
@@ -37,9 +43,10 @@ export class GameClient {
 	 * */
 	async connect() {
 		return new Promise<void>((resolve) => {
+			if (!this.ws) throw new Error('WebSocket is not defined');
 			this.ws.onopen = () => {
 				console.debug('WebSocket connection opened');
-				this.onopen?.(this.ws);
+				this.onopen?.(this.ws!);
 				resolve();
 			};
 
@@ -55,12 +62,26 @@ export class GameClient {
 		});
 	}
 
+	private onopenCallbacks: ((ws: WebSocket) => void)[] = [];
+	set onopen(onopen: (ws: WebSocket) => void) {
+		if (!this.ws) this.onopenCallbacks.push(onopen);
+		else if (this.ws.readyState === WebSocket.OPEN) onopen(this.ws);
+		else this.onopenCallbacks.push(onopen);
+	}
+
+	private oncloseCallbacks: (() => void)[] = [];
+	set onclose(onclose: () => void) {
+		if (!this.ws) this.oncloseCallbacks.push(onclose);
+		else if (this.ws.readyState === WebSocket.CLOSED) onclose();
+		else this.oncloseCallbacks.push(onclose);
+	}
+
 	disconnect() {
-		this.ws.close();
+		this.ws?.close();
 	}
 
 	private send<T extends Action>(action: T, data: ActionData[T]) {
-		this.ws.send(JSON.stringify({ action, data }));
+		this.ws?.send(JSON.stringify({ action, data }));
 	}
 
 	private roomJoinedResolve: ((room: Room) => void) | undefined;
@@ -95,6 +116,7 @@ export class GameClient {
 		this.send('sendmessage', msg);
 	}
 
+	private subscriptionHandlers: Map<Action, Set<() => void>> = new Map();
 	private handleMessage(event: MessageEvent) {
 		console.debug('WebSocket message received:', event.data);
 		const data = safeJSONParse(event.data);
@@ -114,5 +136,11 @@ export class GameClient {
 				console.log(data.data);
 				break;
 		}
+	}
+
+	subscribe(action: Action, callback: () => void) {
+		if (!this.subscriptionHandlers.has(action))
+			this.subscriptionHandlers.set(action, new Set());
+		this.subscriptionHandlers.get(action)?.add(callback);
 	}
 }
