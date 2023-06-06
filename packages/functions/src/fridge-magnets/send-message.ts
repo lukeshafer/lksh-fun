@@ -10,7 +10,7 @@ export const handler = WebSocketApiHandler(async (evt) => {
 	// Get all the connections
 	const connections = await WSConnection.scan.go();
 
-	const apiG = new ApiGatewayManagementApi({
+	const apiGateway = new ApiGatewayManagementApi({
 		endpoint: `${domainName}/${stage}`,
 	});
 
@@ -19,7 +19,7 @@ export const handler = WebSocketApiHandler(async (evt) => {
 		connections.data.map(({ connectionId }) =>
 			postToConnection({
 				connectionId,
-				apiG,
+				apiGateway,
 				messageData,
 				action: 'message',
 			})

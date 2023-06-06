@@ -10,9 +10,6 @@ function generateRoomIdSingle() {
 	return result;
 }
 
-// 1. Get room IDs already registered with the Presence API.
-// 2. Generate room IDs until you generate one that is not already used.
-// 3. Register the new room ID with the Presence API.
 export async function generateRoomId() {
 	let id: string;
 	do {
@@ -29,7 +26,7 @@ export async function generateRoomId() {
 export async function createRoom(opts: { connectionId: string; name: string }) {
 	const roomId = await generateRoomId();
 
-	await db.transaction
+	const result = await db.transaction
 		.write(({ Room, Player }) => [
 			Room.create({ roomId: roomId }).commit(),
 			Player.create({
@@ -39,6 +36,14 @@ export async function createRoom(opts: { connectionId: string; name: string }) {
 			}).commit(),
 		])
 		.go();
+
+	const [room, player] = result.data;
+
+	if (!room.item || !player.item) {
+		console.error('Unable to create room', JSON.stringify(result, null, 2));
+		throw new Error('Unable to create room');
+	}
+	return { room: room.item, player: player.item };
 }
 
 export async function joinRoom(opts: {

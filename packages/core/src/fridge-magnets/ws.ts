@@ -1,17 +1,16 @@
 import type { ApiGatewayManagementApi, AWSError } from 'aws-sdk';
 import { WSConnection } from './db';
+import type { ServerAction, ServerActionData } from './schemas';
 
-const serverActions = ['players', 'message', 'room'] as const;
-
-export async function postToConnection(opts: {
+export async function postToConnection<T extends ServerAction>(opts: {
 	connectionId: string;
-	apiG: ApiGatewayManagementApi;
-	messageData: any;
-	action: (typeof serverActions)[number];
+	apiGateway: ApiGatewayManagementApi;
+	action: T;
+	messageData: ServerActionData<T>;
 }) {
 	try {
 		// Send the message to the given client
-		await opts.apiG
+		await opts.apiGateway
 			.postToConnection({
 				ConnectionId: opts.connectionId,
 				Data: JSON.stringify({

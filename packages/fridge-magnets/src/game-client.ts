@@ -1,20 +1,12 @@
-import { Room, roomSchema } from '@lksh-fun/core/fridge-magnets/schemas';
+import {
+	Room,
+	type ClientAction,
+	type ClientActionData,
+	type ServerAction,
+	ServerActions,
+} from '@lksh-fun/core/fridge-magnets/schemas';
 import { safeJSONParse } from '@lksh-fun/core/utils';
-
-type Action = keyof ActionData;
-interface ActionData {
-	sendmessage: string;
-	joinroom: {
-		roomId: string;
-		name: string;
-	};
-	createroom: {
-		name: string;
-	};
-	startgame: {
-		roomId: string;
-	};
-}
+import { state, setState } from './state';
 
 /**
  * A class that represents a connection to the game server.
@@ -83,7 +75,7 @@ export class GameClient {
 		this.ws?.close();
 	}
 
-	send<T extends Action>(action: T, data: ActionData[T]) {
+	send<T extends ClientAction>(action: T, data: ClientActionData<T>) {
 		this.ws?.send(JSON.stringify({ action, data }));
 	}
 
@@ -119,7 +111,8 @@ export class GameClient {
 		this.send('sendmessage', msg);
 	}
 
-	private subscriptionHandlers: Map<Action, Set<() => void>> = new Map();
+	private subscriptionHandlers: Map<ClientAction, Set<() => void>> =
+		new Map();
 	private handleMessage(event: MessageEvent) {
 		console.debug('WebSocket message received:', event.data);
 		const data = safeJSONParse(event.data);
@@ -127,26 +120,47 @@ export class GameClient {
 			!data ||
 			!(typeof data === 'object') ||
 			!('action' in data) ||
+			typeof data.action !== 'string' ||
 			!('data' in data)
 		)
 			return;
 
-		switch (data.action) {
+		const action = data.action;
+
+		if (!this.checkIsServerAction(action)) return;
+
+		switch (action) {
 			case 'roomcreated':
-				const createdRoom = roomSchema.parse(data.data);
+				const roomCreatedSchema = ServerActions[action];
+				if (!roomCreatedSchema) return;
+				const createdRoom = roomCreatedSchema.parse(data.data);
+				setState({ room: createdRoom });
 				this.roomCreatedResolve?.(createdRoom);
 				break;
 			case 'roomjoined':
-				const joinedRoom = roomSchema.parse(data.data);
+				const roomJoinedSchema = ServerActions[action];
+				if (!roomJoinedSchema) return;
+				const joinedRoom = roomJoinedSchema.parse(data.data);
+				setState({ room: joinedRoom });
 				this.roomJoinedResolve?.(joinedRoom);
 				break;
+			case 'playerjoined':
+				break;
 			case 'message':
-				console.log(data.data);
+				const messageSchema = ServerActions[action];
+				if (!messageSchema) return;
+				const message = messageSchema.parse(data.data);
+
+				console.log(message);
 				break;
 		}
 	}
 
-	subscribe(action: Action, callback: () => void) {
+	private checkIsServerAction(action: string): action is ServerAction {
+		return action in ServerActions;
+	}
+
+	subscribe(action: ClientAction, callback: () => void) {
 		if (!this.subscriptionHandlers.has(action))
 			this.subscriptionHandlers.set(action, new Set());
 		this.subscriptionHandlers.get(action)?.add(callback);

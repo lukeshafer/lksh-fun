@@ -6,7 +6,7 @@ import {
 	Entity,
 	Service,
 } from 'electrodb';
-import { gamePhases } from './schemas';
+import { gamePhases, playerStatuses } from './schemas';
 
 const config = {
 	table: Table.FridgeMagnets.tableName,
@@ -105,6 +105,21 @@ export const Player = new Entity(
 			roomId: {
 				type: 'string',
 				required: true,
+			},
+			isVIP: {
+				type: 'boolean',
+				required: true,
+				default: false,
+			},
+			status: {
+				type: playerStatuses,
+				required: true,
+				default: 'editing',
+			},
+			isConnected: {
+				type: 'boolean',
+				required: true,
+				default: true,
 			},
 		},
 		indexes: {
