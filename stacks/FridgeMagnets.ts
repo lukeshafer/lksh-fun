@@ -1,17 +1,21 @@
 import { type StackContext, WebSocketApi as SSTWebSocketApi, Table } from 'sst/constructs';
 
-export function WebSocketApi({ stack }: StackContext) {
-	const connectionsTable = new Table(stack, 'Connections', {
+export function FridgeMagnetsStack({ stack }: StackContext) {
+	const table = new Table(stack, 'FridgeMagnets', {
 		fields: {
-			id: 'string',
+			pk: 'string',
+			sk: 'string',
 		},
-		primaryIndex: { partitionKey: 'id' },
+		primaryIndex: {
+			partitionKey: 'pk',
+			sortKey: 'sk',
+		},
 	});
 
-	const fridgeMagnetsApi = new SSTWebSocketApi(stack, 'FridgeMagnetsApi', {
+	const wsApi = new SSTWebSocketApi(stack, 'FridgeMagnetsApi', {
 		defaults: {
 			function: {
-				bind: [connectionsTable],
+				bind: [table],
 			},
 		},
 		routes: {
@@ -23,8 +27,11 @@ export function WebSocketApi({ stack }: StackContext) {
 		},
 	});
 	stack.addOutputs({
-		FridgeMagnetsApiEndpoint: fridgeMagnetsApi.url,
+		FridgeMagnetsApiEndpoint: wsApi.url,
 	});
 
-	return fridgeMagnetsApi;
+	return {
+		wsApi,
+		table,
+	};
 }

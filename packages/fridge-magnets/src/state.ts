@@ -1,5 +1,5 @@
 import { createStore } from 'solid-js/store';
-import type { Room, Player } from '@lksh-fun/core/schemas/fridge-magnets';
+import type { Room, Player } from '@lksh-fun/core/fridge-magnets/schemas';
 
 type pieceObj = {
 	word: string;

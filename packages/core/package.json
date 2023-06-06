@@ -12,6 +12,8 @@
 		"vitest": "^0.31.1"
 	},
 	"dependencies": {
+		"aws-sdk": "^2.1386.0",
+		"electrodb": "^2.5.1",
 		"zod": "^3.21.4"
 	}
 }

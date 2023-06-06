@@ -1,4 +1,5 @@
 <script lang="ts">
+	// @ts-nocheck
 	import { room, player } from '$lib/stores';
 
 	let playerList = $room.state.players;

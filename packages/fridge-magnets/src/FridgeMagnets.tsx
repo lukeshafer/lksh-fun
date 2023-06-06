@@ -3,7 +3,6 @@ import { GameClient } from './game-client';
 import { createSignal, onMount } from 'solid-js';
 import { state, setState } from './state';
 import MainMenu from './windows/MainMenu';
-//import { css } from '@acab/ecsstatic';
 
 export default function (props: { apiUrl: string }) {
 	const [client, setClient] = createSignal<GameClient>();
@@ -26,7 +25,7 @@ export default function (props: { apiUrl: string }) {
 	});
 
 	return (
-		<p>
+		<div>
 			{client() ? (
 				!state.room ? (
 					<MainMenu client={client()!} />
@@ -38,6 +37,6 @@ export default function (props: { apiUrl: string }) {
 					<p>Showcase (not implemented)</p>
 				) : null
 			) : null}
-		</p>
+		</div>
 	);
 }

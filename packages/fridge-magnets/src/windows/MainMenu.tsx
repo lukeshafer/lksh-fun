@@ -20,7 +20,9 @@ export default function MainMenu(props: { client: GameClient }) {
 			name: sessionStorage.getItem('name') || '',
 			oldRoomId: localStorage.getItem('roomID') || '',
 			oldSessionId: localStorage.getItem('sessionID') || '',
-			oldSessionExpiration: parseInt(localStorage.getItem('sessionExpiration') || '0'),
+			oldSessionExpiration: parseInt(
+				localStorage.getItem('sessionExpiration') || '0'
+			),
 			isSessionValid: false,
 		});
 		if (menuState.oldSessionExpiration < Date.now()) {
@@ -49,7 +51,11 @@ export default function MainMenu(props: { client: GameClient }) {
 			<h1 class={`title ${h1}`}>
 				<span>Fridge</span> <span>Magnets</span>
 			</h1>
-			<div class={buttons} style={{ visibility: state.isConnected ? 'visible' : 'hidden' }}>
+			<div
+				class={buttons}
+				style={{
+					visibility: state.isConnected ? 'visible' : 'hidden',
+				}}>
 				<form
 					class={`${form} ${formCreate}`}
 					onsubmit={async (e) => {
@@ -60,7 +66,7 @@ export default function MainMenu(props: { client: GameClient }) {
 						type="text"
 						class={`piece ${input}`}
 						id="name"
-						onchange={(e) => (menuState.name = e.target.value)}
+						onchange={(e) => setMenuState('name', e.target.value)}
 						value={menuState.name}
 						placeholder="Your Name"
 						required
@@ -96,12 +102,16 @@ export default function MainMenu(props: { client: GameClient }) {
 					<button class={btn}>Join Room</button>
 					<p class={error}>{menuState.errorText}</p>
 				</form>
-				{menuState.oldSessionId && menuState.isSessionValid && menuState.oldRoomId ? (
+				{menuState.oldSessionId &&
+				menuState.isSessionValid &&
+				menuState.oldRoomId ? (
 					<form
 						class={form}
 						onsubmit={async (e) => {
 							e.preventDefault();
-							await props.client.tryRejoiningRoom(menuState.oldRoomId);
+							await props.client.tryRejoiningRoom(
+								menuState.oldRoomId
+							);
 						}}>
 						<button class={btn}>Re-join disconnected game</button>
 					</form>

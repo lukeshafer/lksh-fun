@@ -1,12 +1,12 @@
 import { StackContext, AstroSite, use } from 'sst/constructs';
-import { WebSocketApi } from './WebSocketApi';
+import { FridgeMagnetsStack } from './FridgeMagnets';
 
 export function Site({ stack }: StackContext) {
-	const wsApi = use(WebSocketApi);
+	const fridgeMagnetsStack = use(FridgeMagnetsStack);
 
 	const site = new AstroSite(stack, 'Site', {
 		path: 'packages/site',
-		bind: [wsApi],
+		bind: [fridgeMagnetsStack.wsApi],
 	});
 	stack.addOutputs({
 		SiteEndpoint: site.url,

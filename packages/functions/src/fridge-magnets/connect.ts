@@ -1,18 +1,10 @@
-import { DynamoDB } from 'aws-sdk';
-import { Table } from 'sst/node/table';
 import { WebSocketApiHandler } from 'sst/node/websocket-api';
-
-const dynamoDb = new DynamoDB.DocumentClient();
+import { WSConnection } from '@lksh-fun/core/fridge-magnets/db';
 
 export const handler = WebSocketApiHandler(async (evt) => {
-	const params = {
-		TableName: Table.Connections.tableName,
-		Item: {
-			id: evt.requestContext.connectionId,
-		},
-	};
-
-	await dynamoDb.put(params).promise();
+	await WSConnection.put({
+		connectionId: evt.requestContext.connectionId,
+	}).go();
 
 	return {
 		statusCode: 200,

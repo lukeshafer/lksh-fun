@@ -1,4 +1,4 @@
-import { Room, roomSchema } from '@lksh-fun/core/schemas/fridge-magnets';
+import { Room, roomSchema } from '@lksh-fun/core/fridge-magnets/schemas';
 import { safeJSONParse } from '@lksh-fun/core/utils';
 
 type Action = keyof ActionData;
@@ -10,6 +10,9 @@ interface ActionData {
 	};
 	createroom: {
 		name: string;
+	};
+	startgame: {
+		roomId: string;
 	};
 }
 
@@ -80,7 +83,7 @@ export class GameClient {
 		this.ws?.close();
 	}
 
-	private send<T extends Action>(action: T, data: ActionData[T]) {
+	send<T extends Action>(action: T, data: ActionData[T]) {
 		this.ws?.send(JSON.stringify({ action, data }));
 	}
 
@@ -120,7 +123,12 @@ export class GameClient {
 	private handleMessage(event: MessageEvent) {
 		console.debug('WebSocket message received:', event.data);
 		const data = safeJSONParse(event.data);
-		if (!data || !(typeof data === 'object') || !('action' in data) || !('data' in data))
+		if (
+			!data ||
+			!(typeof data === 'object') ||
+			!('action' in data) ||
+			!('data' in data)
+		)
 			return;
 
 		switch (data.action) {

@@ -14,6 +14,6 @@ module.exports = {
 	trailingComma: 'es5',
 	tabWidth: 4,
 	useTabs: true,
-	printWidth: 100,
+	printWidth: 80,
 	bracketSameLine: true,
 };
