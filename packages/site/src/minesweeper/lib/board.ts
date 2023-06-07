@@ -1,44 +1,61 @@
-import type { BoardSettings } from '@/minesweeper';
+import { createCell, type Cell } from './cell';
+import type { State } from './state';
 
-export interface Cell {
-	hasMine: boolean;
-	isRevealed: boolean;
-	isFlagged: boolean;
-	nearbyMines: number;
-	row: number;
-	col: number;
+export interface BoardSettings {
+	width: number;
+	height: number;
+	mines: number;
 }
 
-export function generateEmptyBoard(opts: BoardSettings) {
+export type Difficulty = keyof typeof difficulties;
+const difficulties = {
+	easy: {
+		width: 9,
+		height: 9,
+		mines: 10,
+	},
+	medium: {
+		width: 16,
+		height: 16,
+		mines: 40,
+	},
+	hard: {
+		width: 30,
+		height: 16,
+		mines: 99,
+	},
+} satisfies Record<string, BoardSettings>;
+
+export function generateEmptyBoard(state: State) {
+	const opts = difficulties[state.difficulty];
 	const board = [] as Cell[][];
 	for (let i = 0; i < opts.height; i++) {
 		for (let j = 0; j < opts.width; j++) {
 			board[i] = board[i] || [];
-			board[i]![j] = {
+			board[i]![j] = createCell({
 				hasMine: false,
-				isRevealed: false,
-				isFlagged: false,
-				nearbyMines: 0,
-				row: j,
-				col: i,
-			};
+				row: i,
+				col: j,
+				state,
+			});
 		}
 	}
 	return board;
 }
 
-export function generateBoard(
-	opts: BoardSettings & {
-		startPoint: [number, number];
-	}
-) {
+export function generateBoard(opts: {
+	state: State;
+	startPoint: [number, number];
+}) {
+	const settings = difficulties[opts.state.difficulty];
+
 	const board = [] as Cell[][];
-	let mines = opts.mines;
+	let mines = settings.mines;
 
 	const minePositions = [] as [number, number][];
 	while (mines > 0) {
-		const x = Math.floor(Math.random() * opts.width);
-		const y = Math.floor(Math.random() * opts.height);
+		const x = Math.floor(Math.random() * settings.width);
+		const y = Math.floor(Math.random() * settings.height);
 
 		const [startY, startX] = opts.startPoint;
 
@@ -58,34 +75,32 @@ export function generateBoard(
 		}
 	}
 
-	for (let i = 0; i < opts.height; i++) {
-		for (let j = 0; j < opts.width; j++) {
+	for (let i = 0; i < settings.height; i++) {
+		for (let j = 0; j < settings.width; j++) {
 			const hasMine = minePositions.some(
 				([mx, my]) => mx === j && my === i
 			);
 			board[i] = board[i] || [];
-			board[i]![j] = {
+			board[i]![j] = createCell({
 				hasMine,
-				isRevealed: false,
-				isFlagged: false,
-				nearbyMines: 0,
 				row: j,
 				col: i,
-			};
+				state: opts.state,
+			});
 		}
 	}
 
 	// Calculate nearby mines
-	for (let i = 0; i < opts.height; i++) {
-		for (let j = 0; j < opts.width; j++) {
+	for (let i = 0; i < settings.height; i++) {
+		for (let j = 0; j < settings.width; j++) {
 			const cell = board[i]![j]!;
 			if (cell.hasMine) continue;
 
 			let nearbyMines = 0;
 			for (let y = i - 1; y <= i + 1; y++) {
 				for (let x = j - 1; x <= j + 1; x++) {
-					if (y < 0 || y >= opts.height) continue;
-					if (x < 0 || x >= opts.width) continue;
+					if (y < 0 || y >= settings.height) continue;
+					if (x < 0 || x >= settings.width) continue;
 					if (y === i && x === j) continue;
 
 					const nearbyCell = board[y]![x]!;
@@ -93,7 +108,7 @@ export function generateBoard(
 				}
 			}
 
-			cell.nearbyMines = nearbyMines;
+			cell.setNearbyMines(nearbyMines);
 			board[i]![j] = cell;
 		}
 	}
